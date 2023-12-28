@@ -1,11 +1,15 @@
 import express from 'express';
 import patientsService from '../services/patientsService';
-import toNewPatient from '../utils'
+import toNewPatient from '../utils';
 
 const router = express.Router();
 
 router.get('/', (_req, res) => {
     res.send(patientsService.getPatientsWOSsn());
+});
+
+router.get('/:id', (req, res) => {
+    res.send(patientsService.getpatientWOSsn(req.params.id));
 });
 
 router.post('/', (req, res) => {

@@ -1,4 +1,4 @@
-import { Gender, PatientEntry } from "./types";
+import { Entry, Gender, PatientEntry } from "./types";
 
 const isString = (text: unknown): text is string => {
     return typeof text === 'string' || text instanceof String;
@@ -10,7 +10,7 @@ const isDate = (date: string): boolean => {
 
 const isGender = (param: string): param is Gender => {
     return Object.values(Gender).map(v => v.toString()).includes(param);
-}
+};
 
 const parseName = (name: unknown): string => {
 
@@ -19,7 +19,7 @@ const parseName = (name: unknown): string => {
     }
 
     return name;
-}
+};
 
 const parseDateOfBirth = (dateOfBirth: unknown): string => {
 
@@ -28,7 +28,7 @@ const parseDateOfBirth = (dateOfBirth: unknown): string => {
     }
 
     return dateOfBirth;
-}
+};
 
 const parseSsn = (ssn: unknown): string => {
 
@@ -37,7 +37,7 @@ const parseSsn = (ssn: unknown): string => {
     }
 
     return ssn;
-}
+};
 
 const parseGender = (gender: unknown): Gender => {
 
@@ -46,7 +46,7 @@ const parseGender = (gender: unknown): Gender => {
     }
 
     return gender;
-}
+};
 
 const parseOccupation = (occupation: unknown): string => {
 
@@ -55,6 +55,30 @@ const parseOccupation = (occupation: unknown): string => {
     }
 
     return occupation;
+};
+
+const parseEntries = (entries: unknown): Entry[] => {
+
+    if (!Array.isArray(entries)) {
+        throw new Error('Incorrect or missing entries');
+    }
+
+    for (let entry of entries) {
+
+        if ( !entry || typeof entry !== 'object') {
+            throw new Error('Incorrect or missing data');
+        }
+
+        if ('type' in entry && isString(entry.type)) {
+            if (!(entry.type ==='HealthCheck' || entry.type === 'Hospital' || entry.type === 'OccupationalHealthcare'))
+                throw new Error('Incorrect or missing Entry: ' + entry);
+        } else {
+            throw new Error('Entry missing type field.');
+        }
+
+    }
+
+    return entries;
 }
 
 const toNewPatient = (object: unknown): Omit<PatientEntry, 'id'> => {
@@ -63,14 +87,15 @@ const toNewPatient = (object: unknown): Omit<PatientEntry, 'id'> => {
         throw new Error('Incorrect or missing data');
     }
 
-    if ('name' in object && 'dateOfBirth' in object && 'ssn' in object && 'gender' in object && 'occupation' in object) {
+    if ('name' in object && 'dateOfBirth' in object && 'ssn' in object && 'gender' in object && 'occupation' in object && 'entries' in object) {
         return {
             name: parseName(object.name),
             dateOfBirth: parseDateOfBirth(object.dateOfBirth),
             ssn: parseSsn(object.ssn),
             gender: parseGender(object.gender),
-            occupation: parseOccupation(object.occupation)
-        }
+            occupation: parseOccupation(object.occupation),
+            entries: parseEntries(object.entries)
+        };
     }
 
     throw new Error('Incorrect data: a field missing');
