@@ -1,5 +1,5 @@
 import { PatientEntry, Gender } from "../types";
-import toNewPatient from "../utils";
+import { toNewPatient } from "../utils";
 
 
 const patients: PatientEntry[] = [

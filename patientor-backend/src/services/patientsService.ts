@@ -1,4 +1,4 @@
-import { PatientEntry, PatientWOSsn } from "../types";
+import { Entry, EntryWithoutId, PatientEntry, PatientWOSsn } from "../types";
 import patientEntries from "../data/patients";
 import { v1 as uuid } from 'uuid';
 
@@ -15,8 +15,21 @@ const getpatientWOSsn = (id: string): PatientWOSsn => {
 const addPatient = (patient: Omit<PatientEntry, 'id'>): PatientEntry => {
 
     const newPatient = {id: uuid(), ...patient};
+    patientEntries.push(newPatient);
 
     return newPatient;
 };
 
-export default { getPatientsWOSsn, getpatientWOSsn, addPatient };
+const addEntry = (entry: EntryWithoutId, patientId: string): Entry => {
+
+    const newEntry = {id: uuid(), ...entry};
+    patientEntries.forEach(patient => {
+        if (patient.id === patientId) {
+            patient.entries.push(newEntry)
+        }
+    });
+
+    return newEntry;
+};
+
+export default { getPatientsWOSsn, getpatientWOSsn, addPatient, addEntry };
